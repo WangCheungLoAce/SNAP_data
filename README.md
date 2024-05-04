@@ -1,1 +1,1 @@
-This is for CIS 9440 Homwwork 1 & 2
+This is for CIS 9440 Homework 1 & 2
