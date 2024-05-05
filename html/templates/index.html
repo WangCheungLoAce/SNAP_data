@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CIS 9440 Homework</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+</head>
+<body>
+
+    <header>
+        <h1>Welcome! This is for CIS 9440 Homework!</h1>
+    </header>
+
+    <section>
+        <h2>About the Supplemental Nutrition Assistance Program (SNAP) Project</h2>
+        <p>Hello! This is a simple project created by me, learning how to code and HTML.</p>
+        <h2>App Preview</h2>
+        <img src="{{ url_for('static', filename='images/snap_data.jpg') }}" alt="SNAP_location">
+    </section>
+
+    <section>
+        <h3>Data Source</h3>
+        <ul>
+            <li><a href="https://www.fns.usda.gov/snap/supplemental-nutrition-assistance-program">SNAP Program Homepage</a></li>
+            <li><a href="https://www.fns.usda.gov/snap/retailer/data">SNAP Retailer Data</a></li>
+            <li><a href="https://app.powerbi.com/groups/9e64fea0-4903-4868-8245-96de867f0be6/reports/83a5201b-1bb3-4155-a35d-8ca533ee00b5/c3f120281292f84346b5?ctid=6f60f0b3-5f06-4e09-9715-989dba8cc7d8&pbi_source=shareVisual&visual=3ee281c123f170d7428b&height=492.23&width=939.71&bookmarkGuid=cacd478f-a12d-46d5-973a-edb2715b8514">Power BI</a></li>
+        </ul>
+    </section>
+
+    <section>
+        <h3>Data Web Scraping</h3>
+        <p>Click the button below to execute the script:</p>
+        <form action="/webscraping" method="POST">
+            <button type="submit" class="button"><span>Run Script</span></button>
+        </form>
+        {% if output %}
+        <div><p>{{ output }}</p></div>
+        {% endif %}
+    </section>
+
+    <section>
+        <h3>Extract ZIP Data File</h3>
+        <form method="post" action="/extractzip" enctype="multipart/form-data">
+            <input type="file" name="zip_file" accept=".zip" required>
+            <button type="submit">Upload and Extract zip</button>
+        </form>
+        {% if output and "Error:" in output %}
+        <div><p>{{ output }}</p></div>
+        {% endif %}
+        {% if output and "CSV file saved:" in output %}
+        <div><p>{{ output }}</p><br>
+            <a href="/download"><button type="button">Download CSV</button></a>
+        </div>
+        {% endif %}
+    </section>
+    
+
+    <section>
+        <h3>Find Latitude & Longitude Info For Missing Data</h3>
+        <form action="/run_cleanup" method="POST">
+            <label for="confirmation">Do you want to update latitude and longitude? (yes/no):</label>
+            <input type="text" id="confirmation" name="confirmation" required>
+            <button type="submit">Proceed</button>
+        </form>
+        {% if output %}
+        <div><h3>Output Message:</h3><p>{{ output }}</p></div>
+        {% endif %}
+    </section>
+
+    <section>
+        <h3>Upload a File to Azure Blob Storage</h3>
+        <form action="/azureupload" method="POST" enctype="multipart/form-data">
+        <label for="account_name">Azure Account Name:</label>
+        <input type="text" id="account_name" name="account_name"><br><br>
+        
+        <label for="account_key">Azure Account Key:</label>
+        <input type="text" id="account_key" name="account_key"><br><br>
+        
+        <label for="container_name">Azure Container Name:</label>
+        <input type="text" id="container_name" name="container_name"><br><br>
+        
+        <label for="file_name">File Name in Container:</label>
+        <input type="text" id="file_name" name="file_name"><br><br> <!-- Added file_name input -->
+        
+        <input type="file" name="file" id="file"><br><br>
+        
+        <input type="submit" value="Upload File">
+        </form>
+        <pre>
+            {% if output %}
+                {{ output }}
+            {% endif %}
+        </pre>
+    </section>
+
+    <section>
+        <h3>Upload Data to PostgreSQL</h3>
+        <form id="uploadForm" action="/postgresupload" method="POST" enctype="multipart/form-data">
+        <label for="username">Username:</label>
+        <input type="text" id="username" name="username"><br><br>
+        
+        <label for="password">Password:</label>
+        <input type="password" id="password" name="password"><br><br>
+        
+        <label for="host">Host:</label>
+        <input type="text" id="host" name="host"><br><br>
+        
+        <label for="port">Port:</label>
+        <input type="text" id="port" name="port"><br><br>
+        
+        <label for="database_name">Database Name:</label>
+        <input type="text" id="database_name" name="database_name"><br><br>
+        
+        <hr>
+        
+        <h3>Select CSV Files to Upload</h3>
+        
+        <div id="fileInputs">
+            <!-- File input container -->
+        </div>
+        
+        <button type="button" onclick="addFileInput()">Add File</button><br><br>
+        
+        <input type="submit" value="Upload Files">
+        </form>
+        <pre>
+            {% if output %}
+                {{ output }}
+            {% endif %}
+        </pre>
+
+        <script>
+            function addFileInput() {
+                var fileInput = document.createElement('input');
+                fileInput.type = 'file';
+                fileInput.name = 'files[]';  // Use 'files[]' to handle multiple file uploads
+                document.getElementById('fileInputs').appendChild(fileInput);
+            }
+        </script>
+    </section>
+
+    <section>
+        <h2>One Step to Process (Passcode Required)</h2>
+        <form action="/runcode" method="POST">
+            <label for="passcode">Passcode:</label>
+            <input type="password" id="passcode" name="passcode" required><br><br>
+            <input type="submit" value="Run Process">
+        </form>
+        <h4>Azure Blob Storage Output:</h4>
+        <pre>
+            {% if azure_output %}
+                {% for line in azure_output %}
+                    {{ line }}<br>
+                {% endfor %}
+            {% endif %}
+        </pre>
+        <h4>PostgreSQL Output:</h4>
+        <pre>
+            {% if postgres_output %}
+                {% for line in postgres_output %}
+                    {{ line }}<br>
+                {% endfor %}
+            {% endif %}
+        </pre>
+        <h4>Error Output:</h4>
+        <pre>
+            {% if error_output %}
+                {{ error_output }}
+            {% endif %}
+        </pre>
+    </section>
+
+    <section>
+        
+    </section>
+
+    <footer>
+        <p>&copy; 2024 LoLoAce</p>
+    </footer>
+
+    <!-- The overlay -->
+    <div id="myNav" class="overlay">
+
+        <!-- Button to close the overlay navigation -->
+        <a href="javascript:void(0)" class="closebtn" onclick="closeNav()">&times;</a>
+    
+        <!-- Overlay content -->
+        <div class="overlay-content">
+        <a href="#">About</a>
+        <a href="#">Services</a>
+        <a href="#">Clients</a>
+        <a href="#">Contact</a>
+        </div>
+    
+    </div>
+  
+    <!-- Use any element to open/show the overlay navigation menu -->
+    <span onclick="openNav()">open</span>
+
+
+    <!-- Back to Top Button -->
+    <button onclick="topFunction()" id="myBtn" title="Go to top">Top</button>
+
+    <script>
+    // Get the button:
+    let mybutton = document.getElementById("myBtn");
+
+    // When the user scrolls down 20px from the top of the document, show the button
+    window.onscroll = function() {scrollFunction()};
+
+    function scrollFunction() {
+        if (document.body.scrollTop > 20 || document.documentElement.scrollTop > 20) {
+            mybutton.style.display = "block";
+        } else {
+            mybutton.style.display = "none";
+        }
+    }
+
+    // When the user clicks on the button, scroll to the top of the document
+    function topFunction() {
+        document.body.scrollTop = 0; // For Safari
+        document.documentElement.scrollTop = 0; // For Chrome, Firefox, IE and Opera
+    }
+    </script>
+</body>
+</html>
