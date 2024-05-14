@@ -1,0 +1,123 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<project name="snapdata_dw_lgl" id="PostgreSQL-2ca" database="PostgreSQL" >
+	<schema name="instance" catalogname="snapdata_dw_lgl" >
+		<table name="dim_address" >
+			<column name="address_id" type="integer" jt="4" mandatory="y" />
+			<column name="street_number" type="integer" jt="4" />
+			<column name="street_name" type="varchar" length="50" jt="12" />
+			<column name="additional_address" type="varchar" length="50" jt="12" />
+			<column name="city" type="varchar" length="20" jt="12" />
+			<column name="state" type="varchar" length="20" jt="12" />
+			<column name="zip_code" type="integer" jt="4" />
+			<column name="zip4" type="integer" jt="4" />
+			<column name="county" type="varchar" length="20" jt="12" />
+			<index name="pk_dim_address" unique="PRIMARY_KEY" >
+				<column name="address_id" />
+			</index>
+		</table>
+		<table name="dim_store" >
+			<column name="record_id" type="integer" jt="4" mandatory="y" />
+			<column name="store_name" type="varchar" length="100" jt="12" />
+			<column name="authorization_year" type="integer" jt="4" />
+			<column name="authorization_data" type="date" jt="91" />
+			<column name="end_data" type="date" jt="91" />
+			<index name="pk_dim_store" unique="PRIMARY_KEY" >
+				<column name="record_id" />
+			</index>
+		</table>
+		<table name="dim_storetype" >
+			<column name="storetype_id" type="varchar" length="2" jt="12" mandatory="y" />
+			<column name="store_type" type="varchar" length="100" jt="12" />
+			<index name="pk_dim_storetype" unique="PRIMARY_KEY" >
+				<column name="storetype_id" />
+			</index>
+		</table>
+		<table name="fact_snap" >
+			<column name="record_id" type="integer" jt="4" />
+			<column name="storetype_id" type="varchar" length="2" jt="12" />
+			<column name="address_id" type="integer" jt="4" />
+			<column name="latitude" type="double precision" jt="3" />
+			<column name="longitude" type="double precision" jt="3" />
+			<index name="pk_address_id" unique="UNIQUE_KEY" >
+				<column name="address_id" />
+			</index>
+			<index name="pk_record_id" unique="UNIQUE_KEY" >
+				<column name="record_id" />
+			</index>
+			<index name="pk_storetype_id" unique="UNIQUE_KEY" >
+				<column name="storetype_id" />
+			</index>
+			<fk name="fk_fact_snap_dim_store" to_schema="snapdata_dw_lgl.instance" to_table="dim_store" >
+				<fk_column name="record_id" pk="record_id" />
+			</fk>
+			<fk name="fk_fact_snap_dim_storetype" to_schema="snapdata_dw_lgl.instance" to_table="dim_storetype" >
+				<fk_column name="storetype_id" pk="storetype_id" />
+			</fk>
+			<fk name="fk_fact_snap_dim_address" to_schema="snapdata_dw_lgl.instance" to_table="dim_address" >
+				<fk_column name="address_id" pk="address_id" />
+			</fk>
+		</table>
+	</schema>
+	<layout name="Default Layout" id="Layout-18fa" confirmed="y" show_relation="columns" >
+		<entity schema="snapdata_dw_lgl.instance" name="dim_address" color="C1D8EE" x="688" y="416" />
+		<entity schema="snapdata_dw_lgl.instance" name="dim_store" color="C1D8EE" x="1168" y="416" />
+		<entity schema="snapdata_dw_lgl.instance" name="dim_storetype" color="C1D8EE" x="1184" y="608" />
+		<entity schema="snapdata_dw_lgl.instance" name="fact_snap" color="C1D8EE" x="928" y="320" />
+		<callout x="48" y="48" pointer="Round" >
+			<comment><![CDATA[This is a layout - a diagram with tools.
+- Create new entities by right-clicking the layout. 
+- Double-click entity headers to edit.
+- For a better understanding of the schema, create multiple layouts.
+- Deploy the model into the database by converting it first to the physical design.]]></comment>
+		</callout>
+		<script name="SQL_Editor" id="Editor-1b7a" language="SQL" >
+			<string><![CDATA[CREATE SCHEMA IF NOT EXISTS "instance";
+
+CREATE  TABLE "instance".dim_address ( 
+	address_id           integer  NOT NULL  ,
+	street_number        integer    ,
+	street_name          varchar(50)    ,
+	additional_address   varchar(50)    ,
+	city                 varchar(20)    ,
+	"state"              varchar(20)    ,
+	zip_code             integer    ,
+	zip4                 integer    ,
+	county               varchar(20)    ,
+	CONSTRAINT pk_dim_address PRIMARY KEY ( address_id )
+ );
+
+CREATE  TABLE "instance".dim_store ( 
+	record_id            integer  NOT NULL  ,
+	store_name           varchar(100)    ,
+	authorization_year   integer    ,
+	authorization_data   date    ,
+	end_data             date    ,
+	CONSTRAINT pk_dim_store PRIMARY KEY ( record_id )
+ );
+
+CREATE  TABLE "instance".dim_storetype ( 
+	storetype_id         varchar(2)  NOT NULL  ,
+	store_type           varchar(100)    ,
+	CONSTRAINT pk_dim_storetype PRIMARY KEY ( storetype_id )
+ );
+
+CREATE  TABLE "instance".fact_snap ( 
+	record_id            integer    ,
+	storetype_id         varchar(2)    ,
+	address_id           integer    ,
+	latitude             double precision    ,
+	longitude            double precision    ,
+	CONSTRAINT pk_address_id UNIQUE ( address_id ) ,
+	CONSTRAINT pk_record_id UNIQUE ( record_id ) ,
+	CONSTRAINT pk_storetype_id UNIQUE ( storetype_id ) 
+ );
+
+ALTER TABLE "instance".fact_snap ADD CONSTRAINT fk_fact_snap_dim_store FOREIGN KEY ( record_id ) REFERENCES "instance".dim_store( record_id );
+
+ALTER TABLE "instance".fact_snap ADD CONSTRAINT fk_fact_snap_dim_storetype FOREIGN KEY ( storetype_id ) REFERENCES "instance".dim_storetype( storetype_id );
+
+ALTER TABLE "instance".fact_snap ADD CONSTRAINT fk_fact_snap_dim_address FOREIGN KEY ( address_id ) REFERENCES "instance".dim_address( address_id );
+]]></string>
+		</script>
+	</layout>
+</project>
