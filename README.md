@@ -16,6 +16,7 @@ By running the Python script 'app.py' located in the 'html' folder, you can acce
 ### Data Source
 
 SNAP Program Homepage : https://www.fns.usda.gov/snap/supplemental-nutrition-assistance-program
+<br>
 SNAP Retailer Data : https://www.fns.usda.gov/snap/retailer/data
 
 
