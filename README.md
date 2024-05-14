@@ -13,6 +13,12 @@ The SNAP Retailer Locator Power BI is an tool that enables users to find nearby 
 By running the Python script 'app.py' located in the 'html' folder, you can access a webpage containing all the details.
 
 
+### Tools for the Project
+
+* Coding : Python, HTML, CSS, JAVA
+* Storage and Data Warehouse : Azure, DBSchema, PostgreSQL, DataGrip
+
+
 ### Data Source
 
 SNAP Program Homepage : https://www.fns.usda.gov/snap/supplemental-nutrition-assistance-program
